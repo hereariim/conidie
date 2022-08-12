@@ -1,0 +1,11 @@
+pyproject.toml
+setup.cfg
+conidie/__init__.py
+conidie/_script.py
+conidie/path.py
+conidie.egg-info/PKG-INFO
+conidie.egg-info/SOURCES.txt
+conidie.egg-info/dependency_links.txt
+conidie.egg-info/entry_points.txt
+conidie.egg-info/requires.txt
+conidie.egg-info/top_level.txt

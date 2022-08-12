@@ -1,0 +1,2 @@
+[napari.manifest]
+conidie = conidie:napari.yaml

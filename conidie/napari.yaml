@@ -1,0 +1,22 @@
+name: conidie
+contributions:
+  commands:
+    - id: conidie.segmentation
+      title: Say hello, world!
+      python_name: conidie._script:process_function_segmentation
+
+    - id: conidie.save_label
+      title: Say hello, world!
+      python_name: conidie._script:save_modification
+
+    - id: conidie.table_csv
+      title: Say hello, world!
+      python_name: conidie._script:quantitative_data_for_all
+  
+  widgets:
+    - command: conidie.segmentation  # note, same as command.id above
+      display_name: Segmentation
+    - command: conidie.save_label  # note, same as command.id above
+      display_name: Savee label
+    - command: conidie.table_csv  # note, same as command.id above
+      display_name: Get data
