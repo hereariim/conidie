@@ -55,6 +55,7 @@ from napari.utils import progress
 from skimage.io import imsave
 from napari.utils.colormaps import colormap_utils as cu
 from collections import Counter
+from magicgui.tqdm import trange
 
 # from ilastik.experimental.api import from_project_file
 import numpy
@@ -361,15 +362,25 @@ def get_quantitative_data_all_for_csv(dossier_des_images,napari_viewer):
     napari_viewer.window.add_dock_widget(dock_widget, area='right',name="Save")
     
     
+#@magic_factory(call_button="Run segmentation",filename={"label": "Pick a file:"})
+#-> LabelsData
+#def process_function_segmentation(filename=pathlib.Path.home()): 
+#def process_function_segmentation(filename=pathlib.Path.home(),napari_viewer=napari.Viewer()): 
+#    return filename
+
+#filename = process_function_segmentation()
+
 @magic_factory(call_button="Run segmentation",filename={"label": "Pick a file:"})
 #-> LabelsData
-def process_function_segmentation(filename=pathlib.Path.home(),napari_viewer=napari.Viewer()): 
-    
+def process_function_segmentation(napari_viewer : Viewer,filename=pathlib.Path.cwd()): 
     
     dico = {}
     with ZipFile(filename,'r') as zipObject:
+    # with ZipFile(filename,'r') as zipObject:
         listOfFileNames = zipObject.namelist()
-        for i in progress(range(len(listOfFileNames))):
+        
+        for i in trange(len(listOfFileNames)):
+        # for i in progress(range(len(listOfFileNames))):
             zipObject.extract(listOfFileNames[i],path=zip_dir.name)
             
             temp_i = listOfFileNames[i].replace('/','xx').replace(" ","")       
@@ -393,7 +404,7 @@ def process_function_segmentation(filename=pathlib.Path.home(),napari_viewer=nap
 
     # print(zip_dir.name+'\\'+listOfFileNames[i][:-4]+'\\'+listOfFileNames[i][:-4]+'_result.JPG')
     print("Extraction done located into",zip_dir.name)
-    
+        
     names = []
     for ix in os.listdir(zip_dir.name):
         if len(os.listdir(os.path.join(zip_dir.name,ix)))!=0:
