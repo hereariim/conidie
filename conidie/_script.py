@@ -59,9 +59,7 @@ from magicgui.tqdm import trange
 
 # from ilastik.experimental.api import from_project_file
 import numpy
-# from xarray import DataArray
 import skimage.io
-# from magicgui.tqdm import tmgrange, tqdm_mgui
 
 colormap = cu.label_colormap()
 colors = colormap.colors
@@ -71,11 +69,10 @@ color_dict[1] = colors[1]
 
 zip_dir = tempfile.TemporaryDirectory()
 
-def function_central(filepath): # zip file
+def function_central(filepath):
     
     path_image = str(filepath).replace('\\','/')
-    
-    # path    
+  
     donner = '--raw_data="'+path_image+'"'
     output_dir = tempfile.TemporaryDirectory()
     recevoir = '--output_filename_format="'+os.path.join(output_dir.name,path_image.split('/')[-1][:-4])+'_result_type.jpg"'
@@ -262,7 +259,7 @@ def get_quantitative_data(image, napari_viewer):
         else: 
             minus+=1    
     d = {'nombre dhyphes': [len(regions)-minus], 'hyphe': [len(hyphe[0])], 'connidie': [len(connidie[0])]}
-    # print(d)
+
     dock_widget = table_to_widget(d)
     napari_viewer.window.add_dock_widget(dock_widget, area='right')
     
@@ -302,29 +299,27 @@ def quantitative_data_for_all(dictionnaire,napari_viewer):
                 minus+=1    
 
     d = {'sous dossier':A,'nom image':B,'nombre dhyphes': C, 'hyphe': D, 'connidie': E}
-    # print(d)
     dock_widget = table_to_widget(d)
     napari_viewer.window.add_dock_widget(dock_widget, area='right')
     
     
     
 def get_quantitative_data_all_for_csv(dossier_des_images,napari_viewer):
-    A = [] #sous dossier
-    B = [] #nom image
+    A = [] 
+    B = []
     C = []
     D = []
     E = []
     
     dictionnaire = {}
-    # sous dossier avec images
-    for ix in os.listdir(dossier_des_images): # dossier_des_images = zip_dir.name
+    
+    for ix in os.listdir(dossier_des_images):
         chemin_dans_sousdossier = os.path.join(dossier_des_images,ix)
         if len(os.listdir(chemin_dans_sousdossier))!=0:
             for iy in os.listdir(chemin_dans_sousdossier):
                 if iy.find("result")!=-1:
                     data_dico=imread(os.path.join(chemin_dans_sousdossier,iy))
                     print("chemin sous dossier",os.path.join(chemin_dans_sousdossier,iy))
-                    # print(">>>>",Counter(data_dico.flatten()))
                     dictionnaire[iy]=data_dico
 
     for ix in dictionnaire.keys():
@@ -338,14 +333,10 @@ def get_quantitative_data_all_for_csv(dossier_des_images,napari_viewer):
         labels_mask = measure.label(img, background=0) # Solution venant de stackoverflow, Mesure les differents elements                       
         regions = measure.regionprops(labels_mask)
         regions.sort(key=lambda x: x.area, reverse=False) 
-
-        # print(">",len(hyphe[0]))
-        # print(">",len(connidie[0]))
         
         minus=0
         for rg in regions:
             if len(rg.coords[:,0])>seuil:
-                # print(">",len(regions)-minus)
                 name_xx = ix.split('xx')
                 A.append(name_xx[0])
                 B.append(name_xx[1][:-4])
@@ -357,52 +348,30 @@ def get_quantitative_data_all_for_csv(dossier_des_images,napari_viewer):
                 minus+=1    
 
     d = {'sous dossier':A,'nom image':B,'nombre dhyphes': C, 'hyphe': D, 'connidie': E}
-    # print(d)
+
     dock_widget = table_to_widget(d)
     napari_viewer.window.add_dock_widget(dock_widget, area='right',name="Save")
     
     
-#@magic_factory(call_button="Run segmentation",filename={"label": "Pick a file:"})
-#-> LabelsData
-#def process_function_segmentation(filename=pathlib.Path.home()): 
-#def process_function_segmentation(filename=pathlib.Path.home(),napari_viewer=napari.Viewer()): 
-#    return filename
-
-#filename = process_function_segmentation()
-
 @magic_factory(call_button="Run segmentation",filename={"label": "Pick a file:"})
-#-> LabelsData
 def process_function_segmentation(napari_viewer : Viewer,filename=pathlib.Path.cwd()): 
     
     dico = {}
     with ZipFile(filename,'r') as zipObject:
-    # with ZipFile(filename,'r') as zipObject:
+    
         listOfFileNames = zipObject.namelist()
         
         for i in trange(len(listOfFileNames)):
-        # for i in progress(range(len(listOfFileNames))):
-            zipObject.extract(listOfFileNames[i],path=zip_dir.name)
             
+            zipObject.extract(listOfFileNames[i],path=zip_dir.name)            
             temp_i = listOfFileNames[i].replace('/','xx').replace(" ","")       
             temp_i_jpg = listOfFileNames[i].replace('/','xx')[:-4].replace(" ","")
-            
-            # print(zip_dir.name+'\\'+temp_i_jpg)
             os.mkdir(zip_dir.name+'\\'+temp_i_jpg)
-            
-            # print(i,'origin',zip_dir.name+'\\'+listOfFileNames[i].replace('/','\\'))
-            # print(i,'destin',zip_dir.name+'\\'+temp_i_jpg+'\\'+temp_i)
             shutil.move(zip_dir.name+'\\'+listOfFileNames[i].replace('/','\\'),zip_dir.name+'\\'+temp_i_jpg+'\\'+temp_i)
-            
-            # print(i,'process >> -*-',zip_dir.name+'\\'+temp_i_jpg+'\\'+temp_i)
             image_segm = function_central(zip_dir.name+'\\'+temp_i_jpg+'\\'+temp_i)
-            
-            # plt.imsave(zip_dir.name+'\\'+temp_i_jpg+'\\'+temp_i_jpg+'_result.png',cmap=cm.gray, image_segm)
             imsave(zip_dir.name+'\\'+temp_i_jpg+'\\'+temp_i_jpg+'_result.png', img_as_uint(image_segm))
             dico[temp_i_jpg+'_result.png'] = image_segm
             
-            # print('done',i,'-*-',zip_dir.name+'\\'+temp_i_jpg+'\\'+temp_i_jpg+'_result.jpg')
-
-    # print(zip_dir.name+'\\'+listOfFileNames[i][:-4]+'\\'+listOfFileNames[i][:-4]+'_result.JPG')
     print("Extraction done located into",zip_dir.name)
         
     names = []
@@ -420,64 +389,38 @@ def process_function_segmentation(napari_viewer : Viewer,filename=pathlib.Path.c
         napari_viewer.layers.select_all()
         napari_viewer.layers.remove_selected()    
         fname = f'{zip_dir.name}\{name}'
-
-        # print(fname)
-        # print("fname", os.listdir(fname))
         for fname_i in os.listdir(fname):
             if fname_i.find('result')!=-1:
                 data_label = imread(f'{fname}\{fname_i}')
-                # napari_viewer.add_labels(data_label,name=f'{fname_i[:-4]}',color=color_dict)
                 data_label1 = np.array(data_label)
                 tache=np.where(data_label1==0)
                 condide=np.where(data_label1==257)
                 hyphe=np.where(data_label1==514)
                 data_label1[tache]=0
                 data_label1[hyphe]=2
-                data_label1[condide]=1
-                
+                data_label1[condide]=1                
                 napari_viewer.add_labels(data_label1,name=f'{fname_i[:-4]}')
-                # napari_viewer.add_labels(data,name=f'{fname_i[:-4]}',color={0:'brown',1:'blue'})
-                # napari_viewer.add_labels(dico[fname_i],name=f'{fname_i[:-4]}')
-                # print(fname_i)
-                
             else:
                 napari_viewer.add_image(imread(f'{fname}\{fname_i}'),name=f'{fname_i[:-4]}')
 
         print('... done.')
 
-    # instantiate the widget
+
     list_widget = QListWidget()
     for n in names:
         list_widget.addItem(n)    
-
     list_widget.currentItemChanged.connect(open_name)
-    
     napari_viewer.window.add_dock_widget([list_widget], area='right',name="Images")
-
     list_widget.setCurrentRow(0)
     
-    # d = quantitative_data_for_all(dico,napari_viewer)
-    
-    # dock_widget = table_to_widget(d)
-    # napari_viewer.window.add_dock_widget(dock_widget, area='right')
-
 @magic_factory(call_button="save modification", layout="vertical")
 def save_modification(image_seg : napari.layers.Labels, image_raw : ImageData, napari_viewer : Viewer):
     data_label = image_seg.data
-    # print(f"{image_seg.name}",Counter(data_label.flatten()))
     sousdossier = image_seg.name.split('_result')[0]
     nom_image = image_seg.name.split('xx')[1]
-    # print(data_label.shape)
-    # print('>>',f'{zip_dir.name}\{sousdossier}\{image_seg}.png')
     os.remove(f'{zip_dir.name}\{sousdossier}\{image_seg}.png')
     imsave(f'{zip_dir.name}\{sousdossier}\{image_seg}.png', img_as_uint(data_label))
-    # print("OK")
-    
-# @magic_factory(call_button="execute", layout="vertical")
-# def image_table(image_seg : napari.layers.Labels, image_raw : ImageData, napari_viewer : Viewer):
-#     """Add, subtracts, multiplies, or divides to image layers with equal shape."""
-#     print("OK")
-#     return get_quantitative_data(image_seg.data,napari_viewer)
+   
 
 @magic_factory(call_button="execute", layout="vertical")
 def quantitative_data_for_all(napari_viewer : Viewer):
