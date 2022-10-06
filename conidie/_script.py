@@ -221,6 +221,31 @@ def table_to_widget(table: dict) -> QWidget:
     def save_trigger():
         filename, _ = QFileDialog.getSaveFileName(save_button, "Save as csv...", ".", "*.csv")
         view.to_dataframe().to_csv(filename)
+        
+    save_images_button = QPushButton("Save Images")
+
+    @save_images_button.clicked.connect
+    def save_images_trigger():
+        folder_to_zip = zip_dir.name
+        for folder_image_result_sample in os.listdir(folder_to_zip):
+            un_chemin = os.path.join(folder_to_zip,folder_image_result_sample)
+            for ix in os.listdir(un_chemin):
+                if ix.endswith('_result.png'):
+                    data = imread(os.path.join(un_chemin,ix))
+                    
+                    data_label1 = np.array(data)
+                    tache=np.where(data_label1==0)
+                    condide=np.where(data_label1==1)
+                    hyphe=np.where(data_label1==2)
+                    data_label1[tache]=0
+                    data_label1[hyphe]=150
+                    data_label1[condide]=255
+                    
+                    imsave(os.path.join(un_chemin,ix), img_as_ubyte(data_label1))
+        
+        filename, _ = QFileDialog.getSaveFileName(save_images_button, "Save as csv...", ".", "*.zip")
+        shutil.make_archive(filename,format="zip",root_dir=folder_to_zip)
+        show_info('Compressed file done')
 
     widget = QWidget()
     widget.setWindowTitle("region properties")
@@ -228,6 +253,7 @@ def table_to_widget(table: dict) -> QWidget:
     widget.layout().addWidget(copy_button)
     widget.layout().addWidget(save_button)
     widget.layout().addWidget(view.native)
+    widget.layout().addWidget(save_images_button)
 
     return widget
 
@@ -393,6 +419,7 @@ def process_function_segmentation(napari_viewer : Viewer,filename=pathlib.Path.c
             if fname_i.find('result')!=-1:
                 data_label = imread(f'{fname}\{fname_i}')
                 data_label1 = np.array(data_label)
+                print("Image_count :",Counter(data_label.flatten()))
                 tache=np.where(data_label1==0)
                 condide=np.where(data_label1==257)
                 hyphe=np.where(data_label1==514)
