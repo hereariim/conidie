@@ -1,65 +1,60 @@
 from this import d
 from tkinter import Image
 from tkinter.ttk import Progressbar
-from skimage import measure
-import skimage
-import os
-from skimage.io import imread, imshow, imread_collection, concatenate_images
+
 import cv2
-from skimage import img_as_uint
-import matplotlib.pyplot as plt
-import numpy as np
+
 import subprocess
-import pandas
-import napari
-from magicgui import magic_factory
-from qtpy.QtWidgets import QHBoxLayout, QPushButton, QWidget
-from napari.types import ImageData, LabelsData, NewType
-from skimage.transform import resize
-from napari.utils.notifications import show_info
 import pathlib
 import tempfile
 from zipfile import ZipFile
 import os
 from torch import _fake_quantize_learnable_per_tensor_affine
 import conidie.path as paths
-from magicgui import magicgui
+
 import re
 import PIL
-import matplotlib.pyplot as plt
-import numpy as np
-from skimage import measure
+
 import h5py
-from skimage.filters import threshold_multiotsu
-import napari
+from collections import Counter
+from pandas import DataFrame
+import shutil
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
+from fileinput import filename
+from glob import glob
+
 from os import listdir,makedirs
 from os.path import isfile, join
-from collections import Counter
-from qtpy.QtWidgets import QListWidget
-from skimage.measure import label
-from magicgui.widgets import Table
-from napari.types import ImageData, LabelsData, LayerDataTuple
+
+import numpy as np
+import numpy
+from skimage import img_as_uint
+import skimage.io
+import skimage
+from skimage import measure
+from skimage.io import imread, imshow, imread_collection, concatenate_images, imsave
+from skimage.measure import label, regionprops_table
+from skimage.transform import resize
+from skimage.filters import threshold_multiotsu
+
+import napari
 from napari import Viewer
-from pandas import DataFrame
-from qtpy.QtWidgets import QTableWidget, QTableWidgetItem, QWidget, QGridLayout, QPushButton, QFileDialog
-from skimage.measure import regionprops_table
-import shutil
-from magicgui import magicgui
-import matplotlib.cm as cm
-from fileinput import filename
+from napari.types import ImageData, LabelsData, LayerDataTuple
 from napari import layers
-from glob import glob
-from qtpy.QtWidgets import QListWidget
-from qtpy.QtCore import Qt
 from napari.utils import progress
-from skimage.io import imsave
 from napari.utils.colormaps import colormap_utils as cu
-from collections import Counter
+from napari.types import ImageData, LabelsData, NewType
+from napari.utils.notifications import show_info
+from magicgui import magic_factory
+from magicgui import magicgui
+from magicgui.widgets import Table
 from magicgui.tqdm import trange
+from qtpy.QtWidgets import QTableWidget, QTableWidgetItem, QGridLayout, QFileDialog, QListWidget, QHBoxLayout, QPushButton, QWidget
+from qtpy.QtCore import Qt
 
 # from ilastik.experimental.api import from_project_file
-import numpy
-import skimage.io
+
 
 colormap = cu.label_colormap()
 colors = colormap.colors
