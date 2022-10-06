@@ -337,17 +337,11 @@ def get_quantitative_data_all_for_csv(dossier_des_images,napari_viewer):
         for rg in regions:
             if len(rg.coords[:,0])>seuil:
                 name_xx = ix.split('xx')
-                print("name_xx :",name_xx)
                 A.append(name_xx[0])
-                print("A :",name_xx[0])
                 B.append(name_xx[1][:-4])
-                print("B :",name_xx[1][:-4])
                 C.append(len(regions)-minus)
-                print("C :",len(regions)-minus)
                 D.append(len(hyphe[0]))
-                print("D :",len(hyphe[0]))
                 E.append(len(connidie[0]))
-                print("E :",len(connidie[0]))
                 break
             else: 
                 minus+=1    
