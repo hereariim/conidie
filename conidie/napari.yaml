@@ -1,4 +1,5 @@
 name: conidie
+display_name: Conidie
 contributions:
   commands:
     - id: conidie.segmentation
