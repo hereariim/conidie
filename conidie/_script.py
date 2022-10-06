@@ -29,7 +29,7 @@ from os.path import isfile, join
 
 import numpy as np
 import numpy
-from skimage import img_as_uint
+from skimage import img_as_uint, img_as_ubyte
 import skimage.io
 import skimage
 from skimage import measure
@@ -310,6 +310,7 @@ def get_quantitative_data_all_for_csv(dossier_des_images,napari_viewer):
     
     for ix in os.listdir(dossier_des_images):
         chemin_dans_sousdossier = os.path.join(dossier_des_images,ix)
+        print(f'path to {ix} :',chemin_dans_sousdossier)
         if len(os.listdir(chemin_dans_sousdossier))!=0:
             for iy in os.listdir(chemin_dans_sousdossier):
                 if iy.find("result")!=-1:
@@ -318,13 +319,16 @@ def get_quantitative_data_all_for_csv(dossier_des_images,napari_viewer):
                     dictionnaire[iy]=data_dico
 
     for ix in dictionnaire.keys():
+        print('ix',ix)
         img=dictionnaire[ix]
         seuil=25
-
+        
+        print('before',Counter(img.flatten()))
         connidie=np.where(img==1)
         hyphe=np.where(img==2)
         img[connidie]=0
 
+        print('after',Counter(img.flatten()))
         labels_mask = measure.label(img, background=0) # Solution venant de stackoverflow, Mesure les differents elements                       
         regions = measure.regionprops(labels_mask)
         regions.sort(key=lambda x: x.area, reverse=False) 
@@ -333,11 +337,17 @@ def get_quantitative_data_all_for_csv(dossier_des_images,napari_viewer):
         for rg in regions:
             if len(rg.coords[:,0])>seuil:
                 name_xx = ix.split('xx')
+                print("name_xx :",name_xx)
                 A.append(name_xx[0])
+                print("A :",name_xx[0])
                 B.append(name_xx[1][:-4])
+                print("B :",name_xx[1][:-4])
                 C.append(len(regions)-minus)
+                print("C :",len(regions)-minus)
                 D.append(len(hyphe[0]))
+                print("D :",len(hyphe[0]))
                 E.append(len(connidie[0]))
+                print("E :",len(connidie[0]))
                 break
             else: 
                 minus+=1    
@@ -364,7 +374,8 @@ def process_function_segmentation(napari_viewer : Viewer,filename=pathlib.Path.c
             os.mkdir(zip_dir.name+'\\'+temp_i_jpg)
             shutil.move(zip_dir.name+'\\'+listOfFileNames[i].replace('/','\\'),zip_dir.name+'\\'+temp_i_jpg+'\\'+temp_i)
             image_segm = function_central(zip_dir.name+'\\'+temp_i_jpg+'\\'+temp_i)
-            imsave(zip_dir.name+'\\'+temp_i_jpg+'\\'+temp_i_jpg+'_result.png', img_as_uint(image_segm))
+            # imsave(zip_dir.name+'\\'+temp_i_jpg+'\\'+temp_i_jpg+'_result.png', img_as_uint(image_segm))
+            imsave(zip_dir.name+'\\'+temp_i_jpg+'\\'+temp_i_jpg+'_result.png', img_as_ubyte(image_segm))
             dico[temp_i_jpg+'_result.png'] = image_segm
             
     print("Extraction done located into",zip_dir.name)
@@ -414,7 +425,8 @@ def save_modification(image_seg : napari.layers.Labels, image_raw : ImageData, n
     sousdossier = image_seg.name.split('_result')[0]
     nom_image = image_seg.name.split('xx')[1]
     os.remove(f'{zip_dir.name}\{sousdossier}\{image_seg}.png')
-    imsave(f'{zip_dir.name}\{sousdossier}\{image_seg}.png', img_as_uint(data_label))
+    # imsave(f'{zip_dir.name}\{sousdossier}\{image_seg}.png', img_as_uint(data_label))
+    imsave(f'{zip_dir.name}\{sousdossier}\{image_seg}.png', img_as_ubyte(data_label))
    
 
 @magic_factory(call_button="execute", layout="vertical")
